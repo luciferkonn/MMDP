@@ -59,7 +59,7 @@ class GridWorld(gym.Env):
         states = []
         for agent in self.agents:
             states.append(self.get_state(agent))
-        done = False
+        done = [False]
         return states, done
 
     def init_agents(self, n_agents):
@@ -90,7 +90,7 @@ class GridWorld(gym.Env):
 
     def get_done(self, agent):
         time = self.get_state(agent)['time']
-        if time == self.terminal_time:
+        if self.time == self.terminal_time:
             return True
         else:
             return False

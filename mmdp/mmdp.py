@@ -25,7 +25,7 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.5, epsilon=0.1, gamm
             # initialize each agent's state
             states, done = env.reset()
             # loop for every state of agent
-            while not done:
+            while not done[0]:
                 for state in states:
                     (x, y) = state['loc']
                     time = state['time']
@@ -59,8 +59,8 @@ if __name__ == '__main__':
 
     # parser args
     args = parser.parse_args()
-    env = GridWorld(args=args)
-    rewards = mqlearning(args=args, env=env, episode_len=50000000, runs=1)
+    env = GridWorld(args=args, terminal_time=1000)
+    rewards = mqlearning(args=args, env=env, episode_len=5000, runs=1)
     rewards /= 20
     plt.figure(1)
     plt.plot(rewards)

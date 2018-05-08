@@ -11,9 +11,6 @@ ROOT = '/home/lucifer/Documents/Git/MMDP/'
 def mqlearning(args, env, episode_len=1000, learning_rate=0.5, epsilon=0.1, gamma=1, runs=30):
     grid_size = args.grid_size
     n_actions = args.n_actions
-    # env = env
-    # n_agents = args.n_agents
-    # epsilon = args.epsilon
     # initialization
     q_value = np.zeros((grid_size*grid_size, n_actions))
     # total reward
@@ -24,29 +21,32 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.5, epsilon=0.1, gamm
         for i in range(episode_len):
             # initialize each agent's state
             states, done = env.reset()
+            action = [0] * len(states)
             # loop for every state of agent
             while not done[0]:
-                for state in states:
+                for j, state in enumerate(states):
                     (x, y) = state['loc']
                     time = state['time']
                     id = state['id']
                     # eplison-greedy choose acion
                     if np.random.binomial(1, epsilon) == 1:
-                        action = np.random.randint(n_actions)
+                        action[j] = np.random.randint(n_actions)
                     else:
-                        action = np.argmax(q_value[x*grid_size+y])
-                    next_state, reward, done, info = env.step(action)
+                        action[j] = np.argmax(q_value[x*grid_size+y])
+                        # print(action[j])
+                # every agent take a step
+                next_state, reward, done, info = env.step(action)
 
-                    # updata q-value
-                    (next_x, next_y) = next_state[0]['loc']
-                    q_value[x*grid_size+y, action] = q_value[x*grid_size+y, action] + learning_rate * \
-                                                               (reward + gamma * np.max(q_value[next_x*grid_size+next_y, :] -
-                                                                                        q_value[x*grid_size+y, action]))
+                # updata q-value simultaneously
+                for k, _ in enumerate(action):
+                    (next_x, next_y) = next_state[k]['loc']
+                    q_value[x*grid_size+y, action[k]] += learning_rate * (reward[k] + gamma * np.max(q_value[next_x *
+                                                            grid_size + next_y, :]) - q_value[x*grid_size+y, action[k]])
                     (x, y) = (next_x, next_y)
-                    total_reward[i] += reward
+                    total_reward[i] += reward[k]
             if i % 100 == 0:
                 print('Episode:{}, reward{}'.format(i, total_reward[i]))
-    return total_reward
+    return total_reward, q_value
 
 
 if __name__ == '__main__':
@@ -59,9 +59,10 @@ if __name__ == '__main__':
 
     # parser args
     args = parser.parse_args()
-    env = GridWorld(args=args, terminal_time=1000)
-    rewards = mqlearning(args=args, env=env, episode_len=5000, runs=1)
+    env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-1, reward_move=-1)
+    rewards, q_value = mqlearning(args=args, env=env, episode_len=1000, runs=1)
     rewards /= 20
+    print(q_value.reshape(args.grid_size*args.grid_size, 5))
     plt.figure(1)
     plt.plot(rewards)
     plt.xlabel('Episodes')

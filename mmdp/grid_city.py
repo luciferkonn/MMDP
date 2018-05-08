@@ -40,11 +40,13 @@ class GridWorld(gym.Env):
         reward_n = []
         done_n = []
         info_n = {'n': []}
-        self.make_move(action)  # !!! need to rewrote actions
         # time add 1
         self.time += 1
+
+        self.make_move(action)
         # return for each agent
-        for agent in self.agents:
+        for i, agent in enumerate(self.agents):
+            # next_state, reward, done, info for each agent
             state_n.append(self.get_state(agent))
             reward_n.append(self.get_reward(agent))
             done_n.append(self.get_done(agent))
@@ -102,7 +104,7 @@ class GridWorld(gym.Env):
     def make_move(self, action):
         car_locations = self.get_car_locs()  # save for collision use
         for i, agent in enumerate(self.agents):
-            (x, y) = self.convert_action_to_loc(agent, action)
+            (x, y) = self.convert_action_to_loc(agent, action[i])
 
             # out of the grid
             if x not in range(self.grid_size) or y not in range(self.grid_size):
@@ -166,9 +168,13 @@ class GridWorld(gym.Env):
         j = 0
         for i in range(np.size(data)):
             if data[i] >= 1:
-                continue
+                # continue
+                data[i] = 1
+            else:
+                data[i] = 0
             j += 1
             if j >= self.grid_size * self.grid_size:
                 break
             prob[j] = data[i]
+        print(prob)
         return prob.reshape(self.grid_size, self.grid_size)

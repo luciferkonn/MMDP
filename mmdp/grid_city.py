@@ -15,7 +15,7 @@ def prob_read(filename):
 class GridWorld(gym.Env):
 
     def __init__(self, args, reward_hitwall=-0.2, reward_collision=-0.1, reward_pick=1, reward_stay=-0.1, reward_move=-0.1,
-                 threshold_num=5, terminal_time=1000):
+                 threshold_num=50000, terminal_time=1000):
         self.grid_size = args.grid_size
         self.n_agents = args.n_agents
         self.cust_prob = self.prob_set(args.filename)
@@ -64,6 +64,12 @@ class GridWorld(gym.Env):
         done = [False]
         return states, done
 
+    def get_states(self):
+        state_n = []
+        for i, agent in enumerate(self.agents):
+            state_n.append(self.get_state(agent))
+        return state_n
+
     def init_agents(self, n_agents):
         agents = []
         for i in range(0, self.n_agents):
@@ -75,8 +81,8 @@ class GridWorld(gym.Env):
     # return a random loc for an agent
     def agent_random_loc(self):
         rand_loc = self.rand_pair(0, self.grid_size)
-        return rand_loc
-
+        # return rand_loc
+        return 5, 4
     # generate a random loc for x and y
     @staticmethod
     def rand_pair(s, grid_size):
@@ -118,8 +124,8 @@ class GridWorld(gym.Env):
                     agent.reward = self.reward_stay
                 else:
                     if (x, y) != agent.loc:
-                        self.threshold[x][y] += 1
-                    if self.threshold[x][y] <= self.threshold_num:
+                        self.threshold[x, y] += 1
+                    if self.threshold[x, y] <= self.threshold_num:
                         if self.can_pick(x, y):
                             agent.reward = self.reward_pick
                             agent.step['event'] = 'pick'
@@ -159,7 +165,7 @@ class GridWorld(gym.Env):
 
     # check if a car agent can find a passenger at location(x, y)
     def can_pick(self, x, y):
-        return np.random.binomial(1, self.cust_prob[x][y])
+        return np.random.binomial(1, self.cust_prob[x, y])
 
     # give every grid(x, y) a pick up probability from pr.txt
     def prob_set(self, filename):
@@ -176,5 +182,5 @@ class GridWorld(gym.Env):
             if j >= self.grid_size * self.grid_size:
                 break
             prob[j] = data[i]
-        print(prob)
+        print(prob.reshape(self.grid_size, self.grid_size))
         return prob.reshape(self.grid_size, self.grid_size)

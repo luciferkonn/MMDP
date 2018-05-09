@@ -15,13 +15,15 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
     # total reward
     total_reward = np.zeros(episode_len)
 
-    for _ in range(runs):
+    for j in range(runs):
+        print('RUNS:{}'.format(j))
         # initialization
         q_value = np.zeros((grid_size*grid_size, n_actions))
         # loop for each episode
         for i in range(episode_len):
             # initialize each agent's state
             states, done = env.reset()
+            total = 0
             action = [0] * len(states)
             # loop for every state of agent
             while not done[0]:
@@ -45,10 +47,11 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
                     q_value[x*grid_size+y, action[k]] += learning_rate * (reward[k] + gamma * np.max(q_value[next_x *
                                                             grid_size + next_y, :]) - q_value[x*grid_size+y, action[k]])
                     (x, y) = (next_x, next_y)
-                    total_reward[i] += reward[k]
+                    total += reward[k]
                 states = env.get_states()
-            if i % 100 == 0:
-                print('Episode:{}, reward{}'.format(i, total_reward[i]))
+            total_reward[i] += total
+            if i % 10 == 0:
+                print('Episode:{}, reward{}'.format(i, total))
     return total_reward, q_value
 
 def printOptimalPolicy(q_value):

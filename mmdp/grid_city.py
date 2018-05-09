@@ -174,10 +174,10 @@ class GridWorld(gym.Env):
         j = 0
         for i in range(np.size(data)):
             if data[i] >= 1:
-                # continue
-                data[i] = 1
-            else:
-                data[i] = 0
+                continue
+#                 data[i] = 1
+#             else:
+#                 data[i] = 0
             j += 1
             if j >= self.grid_size * self.grid_size:
                 break

@@ -18,7 +18,12 @@ class GridWorld(gym.Env):
                  threshold_num=50000000, terminal_time=1000):
         self.grid_size = args.grid_size
         self.n_agents = args.n_agents
-        self.cust_prob = self.prob_set(args.filename)
+#         self.cust_prob = self.prob_set(args.filename)
+        self.cust_prob = [[0.34114716 0.35664167 0.39854643 0.40897067 0.45349451]
+                         [0.33441988 0.31124772 0.34391435 0.34767191 0.38524335]
+                         [0.35419336 0.31008612 0.32275275 0.32408603 0.35054635]
+                         [0.37512068 0.32434676 0.31939436 0.3037686  0.32737175]
+                         [0.4023588  0.30629816 0.29801244 0.28048192 0.3314184 ]]
         self.agents = self.init_agents(self.n_agents)
         self.grid = np.zeros((self.grid_size, self.grid_size))
         # set time for the agent, start at 0
@@ -81,8 +86,8 @@ class GridWorld(gym.Env):
     # return a random loc for an agent
     def agent_random_loc(self):
         rand_loc = self.rand_pair(0, self.grid_size)
-        # return rand_loc
-        return 5, 4
+        return rand_loc
+#         return 5, 4
     # generate a random loc for x and y
     @staticmethod
     def rand_pair(s, grid_size):

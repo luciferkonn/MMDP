@@ -47,11 +47,12 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
                     # implement agent others
                     action_oth = np.delete(action, k, 0)
                     action_others[k] = 0
+                    size = len(action_oth)
                     for oth, _ in enumerate(action_oth):
                         if oth == len(action_oth) - 1:
                             action_others[k] += action_oth[oth]
                         else:
-                            action_others[k] += action_oth[oth] * n_actions
+                            action_others[k] += action_oth[oth] * n_actions**(size - oth - 1)
 
                 # updata q-value simultaneously
                 for k, _ in enumerate(action):

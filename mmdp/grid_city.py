@@ -39,6 +39,7 @@ class GridWorld(gym.Env):
         # self.conv_prob = self.convolution(self.cust_prob)
         self.pool_prob = self.aggregation(self.cust_prob, 5, 1)
         self.aggre = aggre
+        self.num_pick = 0
 
     def step(self, action):
         # set state, reward, done, info for every agent
@@ -63,6 +64,7 @@ class GridWorld(gym.Env):
     def reset(self):
         self.agents = self.init_agents(self.n_agents)
         self.time = 0
+        self.num_pick = 0
         self.threshold = np.zeros((self.grid_size, self.grid_size))
         states = []
         for agent in self.agents:
@@ -104,7 +106,7 @@ class GridWorld(gym.Env):
 
     def get_done(self, agent):
         time = self.get_state(agent)['time']
-        if self.time == self.terminal_time:
+        if self.time >= self.terminal_time:
             return True
         else:
             return False
@@ -143,6 +145,9 @@ class GridWorld(gym.Env):
                         if self.can_pick(x, y, cust_prob):
                             agent.reward = self.reward_pick
                             agent.step['event'] = 'pick'
+                            (x, y) = self.move_random(x, y)
+                            self.time += 2
+                            self.num_pick += 1
                         else:
                             agent.reward = self.reward_move
                             agent.step['event'] = 'idle'
@@ -180,6 +185,16 @@ class GridWorld(gym.Env):
     # check if a car agent can find a passenger at location(x, y)
     def can_pick(self, x, y, cust_prob):
         return np.random.binomial(1, cust_prob[x][y])
+
+    # whenever find a customer, taxi move to the destination
+    def move_random(self, x, y):
+        new_x = x + 2
+        if new_x > self.grid_size-1:
+            new_x = self.grid_size-1
+        new_y = y + 2
+        if new_y > self.grid_size-1:
+            new_y = self.grid_size-1
+        return new_x, new_y
 
     # give every grid(x, y) a pick up probability from pr.txt
     def prob_set(self, filename):

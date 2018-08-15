@@ -76,7 +76,7 @@ def heuristic(args, env):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Multi-agent DDPG')
     # add argument
-    parser.add_argument('--grid_size', default=9, type=int, help='the size of a grid world')
+    parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=5, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default=ROOT + '/data/pr.txt', type=str, help='Pick-up probability file')
     parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
@@ -87,5 +87,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2)
     # print(get_q_value())
+    print(env.cust_prob)
     print(env.pool_prob)
     heuristic(args, env)

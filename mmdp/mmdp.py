@@ -15,11 +15,12 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
 
     # total reward
     total_reward = np.zeros(episode_len)
-
+    global_total = 0
     for j in range(runs):
         print('RUNS:{}'.format(j))
         # initialization
         q_value = np.zeros((grid_size*grid_size, n_actions, n_actions**(n_agents-1)))
+
         # loop for each episode
         for i in range(episode_len):
             # initialize each agent's state
@@ -27,6 +28,7 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
             total = 0
             action = [0] * len(states)
             action_others = [0] * len(action)
+
             # loop for every state of agent
             while not done[0]:
                 for j, state in enumerate(states):
@@ -66,8 +68,12 @@ def mqlearning(args, env, episode_len=1000, learning_rate=0.9, epsilon=0.1, gamm
                     total += reward[k]
                 states = env.get_states()
             total_reward[i] += total
+            total_passenger = env.num_pick
             if i % 10 == 0:
-                print('Episode:{}, reward{}'.format(i, total))
+                print('Episode:{}, reward{}, passenger{}'.format(i, total, total_passenger))
+            global_total += total
+            print('Global reward:' + str(global_total))
+    print('Average:' + str(global_total / 30000))
     return total_reward, q_value
 
 def printOptimalPolicy(q_value):
@@ -93,21 +99,23 @@ def printOptimalPolicy(q_value):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Multi-agent DDPG')
     # add argument
-    parser.add_argument('--grid_size', default=5, type=int, help='the size of a grid world')
+    parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=5, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default=ROOT+'/data/pr.txt', type=str, help='Pick-up probability file')
     parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
-    parser.add_argument('--runs', default=30, type=int, help='the number of times run the game')
+    parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')
 
     # parser args
     args = parser.parse_args()
     env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2, aggre=False)
-    rewards, q_value = mqlearning(args=args, env=env, episode_len=300, runs=args.runs)
+    rewards, q_value = mqlearning(args=args, env=env, episode_len=30000, runs=args.runs)
     rewards /= args.runs
-    plt.figure(1)
-    plt.plot(rewards)
-    plt.xlabel('Episodes')
-    plt.ylabel('sum of rewards during episode')
-    plt.legend()
-    plt.show()
-    printOptimalPolicy(q_value)
+    print(str(rewards))
+
+    # plt.figure(1)
+    # plt.plot(rewards)
+    # plt.xlabel('Episodes')
+    # plt.ylabel('sum of rewards during episode')
+    # plt.legend()
+    # plt.show()
+    # printOptimalPolicy(q_value)

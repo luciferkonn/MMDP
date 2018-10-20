@@ -26,7 +26,6 @@ def map_location(x, y, pool_prob, cust_prob):
     return new_x, new_y
 
 
-
 def heuristic(args, env):
     # hyper-parameters
     episode_len = args.episode_len

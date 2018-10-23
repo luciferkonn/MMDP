@@ -117,12 +117,13 @@ if __name__ == '__main__':
     parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=5, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default='../data/pr.txt', type=str, help='Pick-up probability file')
-    parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
+    parser.add_argument('--n_agents', default=3, type=int, help='the number of agent play in the environment')
     parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')
+    parser.add_argument('--aggre', default=False, help='the number of times run the game')
 
     # parser args
     args = parser.parse_args()
-    env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2, aggre=False)
+    env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2)
 
     # Create memory
     memory = ReplayMemory(buffer=50000, batchSize=500)
@@ -133,20 +134,24 @@ if __name__ == '__main__':
     print('\nCollecting experience...')
     for i_episode in range(4000):
         s, done = env.reset()
+        a = torch.LongTensor(args.n_agents)
         ep_r = 0
         while True:
-            (x, y) = s[0]['loc']
-            one_hot_state = torch.Tensor(100 * 100)
-            one_hot_state[x*args.grid_size+y] = 1
-            a = torch.from_numpy(dqn.choose_action(one_hot_state))
-            # take an action return next_state, reward, done, info
-            torch.unsqueeze(a, 0)
+            for i in range(args.n_agents):
+                (x, y) = s[i]['loc']
+                one_hot_state = torch.Tensor(100 * 100)
+                one_hot_state[x*args.grid_size+y] = 1
+                a[i] = torch.from_numpy(dqn.choose_action(one_hot_state))
+                # take an action return next_state, reward, done, info
+                torch.unsqueeze(a[i], 0)
             s_, r, done, info = env.step(a)
             # modify the reward
             # x, x_dot, theta, theta_dot = s_
             dqn.store_transition(s, a, r, s_, done)
 
-            ep_r += r[0]
+            # calculate the accumulative rewards for all agents
+            for i in range(args.n_agents):
+                ep_r += r[i]
             if dqn.memory_counter > MEMORY_CAPACITY:
                 dqn.learn()
                 if done[0]:

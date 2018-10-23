@@ -18,7 +18,7 @@ def prob_read(filename):
 class GridWorld(gym.Env):
 
     def __init__(self, args, reward_hitwall=-0.2, reward_collision=-0.1, reward_pick=1, reward_stay=-0.1, reward_move=-0.1,
-                 threshold_num=50000000, terminal_time=1000, aggre=False):
+                 threshold_num=50000000, terminal_time=1000):
         self.grid_size = args.grid_size
         self.n_agents = args.n_agents
         self.cust_prob = self.prob_set(args.filename)
@@ -38,7 +38,7 @@ class GridWorld(gym.Env):
         self.threshold = np.zeros((self.grid_size, self.grid_size))
         # self.conv_prob = self.convolution(self.cust_prob)
         self.pool_prob = self.aggregation(self.cust_prob, 5, 1)
-        self.aggre = aggre
+        self.aggre = args.aggre
         self.num_pick = 0
 
     def step(self, action):
@@ -127,7 +127,7 @@ class GridWorld(gym.Env):
 
             # pick up customer
             else:
-                if action == 0:
+                if action[i] == 0:
                     agent.step['event'] = 'stay'
                     agent.reward = self.reward_stay
                 else:
@@ -135,7 +135,7 @@ class GridWorld(gym.Env):
                         self.threshold[x, y] += 1
                     if self.threshold[x, y] <= self.threshold_num:
                         if self.aggre is True:
-                            cust_prob = [[0.34114716, 0.35664167, 0.39854643, 0.40897067, 0.45349451],
+                            cust_prob = [[1, 0.35664167, 0.39854643, 0.40897067, 0.45349451],
                                          [0.33441988, 0.31124772, 0.34391435, 0.34767191, 0.38524335],
                                          [0.35419336, 0.31008612, 0.32275275, 0.32408603, 0.35054635],
                                          [0.37512068, 0.32434676, 0.31939436, 0.3037686,  0.32737175],

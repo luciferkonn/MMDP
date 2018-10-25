@@ -115,7 +115,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Multi-agent DDPG')
     # add argument
     parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
-    parser.add_argument('--n_actions', default=5, type=int, help='total number of actions an agent can take')
+    parser.add_argument('--n_actions', default=7, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default='../data/pr.txt', type=str, help='Pick-up probability file')
     parser.add_argument('--n_agents', default=3, type=int, help='the number of agent play in the environment')
     parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')

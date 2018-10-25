@@ -163,14 +163,26 @@ class GridWorld(gym.Env):
         new_loc = curr_loc
         if action == 0:  # stay
             pass
-        elif action == 3:  # left
-            new_loc = (curr_loc[0], curr_loc[1] - 1)
-        elif action == 1:  # up
-            new_loc = (curr_loc[0] - 1, curr_loc[1])
-        elif action == 4:  # right
-            new_loc = (curr_loc[0], curr_loc[1] + 1)
-        elif action == 2:  # down
-            new_loc = (curr_loc[0]+1, curr_loc[1])
+        # elif action == 3:  # left
+        #     new_loc = (curr_loc[0], curr_loc[1] - 1)
+        # elif action == 1:  # up
+        #     new_loc = (curr_loc[0] - 1, curr_loc[1])
+        # elif action == 4:  # right
+        #     new_loc = (curr_loc[0], curr_loc[1] + 1)
+        # elif action == 2:  # down
+        #     new_loc = (curr_loc[0]+1, curr_loc[1])
+        elif action == 1:
+            new_loc = (curr_loc[0]-1, curr_loc[1]-1)
+        elif action == 2:
+            new_loc = (curr_loc[0]-1, curr_loc[1]+1)
+        elif action == 3:
+            new_loc = (curr_loc[0], curr_loc[1]+1)
+        elif action == 4:
+            new_loc = (curr_loc[0]+1, curr_loc[1]+1)
+        elif action == 5:
+            new_loc = (curr_loc[0]+1, curr_loc[1]-1)
+        elif action == 6:
+            new_loc = (curr_loc[0], curr_loc[1]-1)
         else:
             print("ERROR on INTENDED ACTION: Returning to current location")
         return new_loc

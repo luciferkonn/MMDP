@@ -1,0 +1,8 @@
+{
+  "grid_size":100,
+  "n_actions":7,
+  "n_agents":100,
+  "file_name":"../data/pr.txt",
+  "runs":3,
+  "aggre":true
+}

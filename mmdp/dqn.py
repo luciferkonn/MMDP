@@ -22,7 +22,7 @@ ROOT = '/home/lucifer/Documents/Git/MMDP/'
 # Hyper parameters
 BATCH_SIZE = 32
 LR = 0.01
-EPSILON = 0.9
+EPSILON = 0.09
 GAMMA = 0.9
 TARGET_REPLACE_ITER = 100
 MEMORY_CAPACITY = 2000
@@ -58,7 +58,6 @@ class DQN(object):
 
     def choose_action(self, x):
         x = torch.unsqueeze(torch.FloatTensor(x), 0)
-        # print(x.view)
         # input only one sample
         if np.random.uniform() < EPSILON:
             actions_value = self.eval_net.forward(x)
@@ -117,7 +116,7 @@ if __name__ == '__main__':
     parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=7, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default='../data/pr.txt', type=str, help='Pick-up probability file')
-    parser.add_argument('--n_agents', default=3, type=int, help='the number of agent play in the environment')
+    parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
     parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')
     parser.add_argument('--aggre', default=False, help='the number of times run the game')
 

@@ -116,13 +116,13 @@ if __name__ == '__main__':
     parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=7, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default='../data/pr.txt', type=str, help='Pick-up probability file')
-    parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
+    parser.add_argument('--n_agents', default=4, type=int, help='the number of agent play in the environment')
     parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')
     parser.add_argument('--aggre', default=False, help='the number of times run the game')
 
     # parser args
     args = parser.parse_args()
-    env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2)
+    env = GridWorld(args=args, terminal_time=1000, reward_stay=-0.1, reward_hitwall=-1, reward_move=-0.1, reward_pick=10)
 
     # Create memory
     memory = ReplayMemory(buffer=50000, batchSize=500)
@@ -131,6 +131,8 @@ if __name__ == '__main__':
     dqn = DQN(memory=memory)
     # Evaluating......
     print('\nCollecting experience...')
+    text_file = open("../results/output_dqn.txt", "w")
+
     for i_episode in range(4000):
         s, done = env.reset()
         a = torch.LongTensor(args.n_agents)
@@ -156,7 +158,11 @@ if __name__ == '__main__':
                 if done[0]:
                     print('Ep:', i_episode,
                           '| Ep_r:', round(ep_r, 2))
+                    print('Ep:', i_episode,
+                      '| Ep_r:', round(ep_r, 2), file=text_file)
 
             if done[0]:
                 break
             s = s_
+
+    text_file.close()

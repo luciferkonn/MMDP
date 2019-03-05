@@ -17,7 +17,7 @@ def prob_read(filename):
 
 class GridWorld(gym.Env):
 
-    def __init__(self, args, reward_hitwall=-0.2, reward_collision=-0.1, reward_pick=1, reward_stay=-0.1, reward_move=-0.1,
+    def __init__(self, args, reward_hitwall=-0.2, reward_collision=-0.1, reward_pick=100, reward_stay=-0.1, reward_move=-0.1,
                  threshold_num=50000000, terminal_time=1000):
         self.grid_size = args.grid_size
         self.n_agents = args.n_agents

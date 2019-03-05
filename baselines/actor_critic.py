@@ -105,7 +105,7 @@ def main():
     parser.add_argument('--grid_size', default=100, type=int, help='the size of a grid world')
     parser.add_argument('--n_actions', default=7, type=int, help='total number of actions an agent can take')
     parser.add_argument('--filename', default='../data/pr.txt', type=str, help='Pick-up probability file')
-    parser.add_argument('--n_agents', default=1, type=int, help='the number of agent play in the environment')
+    parser.add_argument('--n_agents', default=4, type=int, help='the number of agent play in the environment')
     parser.add_argument('--runs', default=1, type=int, help='the number of times run the game')
     parser.add_argument('--aggre', default=False, help='the number of times run the game')
     # parser args
@@ -113,7 +113,7 @@ def main():
 
     # opt = DotDic(json.loads(open(args.config_path, 'r').read()))
     ACTION_DIM = args.n_actions
-    env = GridWorld(args=args, terminal_time=1000, reward_stay=-1, reward_hitwall=-2, reward_move=-1, reward_pick=2)
+    env = GridWorld(args=args, terminal_time=1000, reward_stay=-0.1, reward_hitwall=-1, reward_move=-0.1, reward_pick=10)
     init_state, done = env.reset()
     init_state = state_to_oh(init_state)
 
@@ -161,26 +161,24 @@ def main():
         critic_net_optim.step()
 
         # Testing
-        if (i_episode + 1) % 50 == 0:
-
-            # for test_epi in range(4000):
-                state, _ = env.reset()
-                state = state_to_oh(state)
-                result = 0
-                while True:
-                    softmax_action = torch.exp(actor_net(Variable(torch.Tensor([state]))))
-                    # print(softmax_action.data)
-                    action = np.array([np.argmax(softmax_action.data.numpy()[0])]).astype(int)
-                    next_state, reward, done, _ = env.step(action)
-                    next_state = state_to_oh(next_state)
-                    result += reward[0]
-                    state = next_state
-                    if done[0]:
-                        print("step:", i_episode + 1, "test result:", result)
-                        steps.append(i_episode + 1)
-                        test_results.append(result / 10)
-                        break
-
+        # if (i_episode + 1) % 50 == 0:
+        # for test_epi in range(4000):
+        state, _ = env.reset()
+        state = state_to_oh(state)
+        result = 0
+        while True:
+            softmax_action = torch.exp(actor_net(Variable(torch.Tensor([state]))))
+            # print(softmax_action.data)
+            action = np.array([np.argmax(softmax_action.data.numpy()[0])]).astype(int)
+            next_state, reward, done, _ = env.step(action)
+            next_state = state_to_oh(next_state)
+            result += reward[0]
+            state = next_state
+            if done[0]:
+                print("step:", i_episode + 1, "test result:", round(result, 2))
+                steps.append(i_episode + 1)
+                test_results.append(result / 10)
+                break
 
 
 if __name__ == '__main__':
